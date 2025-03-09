@@ -3,91 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Lista de Cómics</title>
     <style>
-        #id { display: none;}
+        #id { display: none; }
     </style>
 </head>
 <body>
-    <h1>Lista Ordenadores</h1>
-    <a href="/actualiza.html">Actualizar ordenadores</a>
-    <select name="seleccionaOrdenador" id="seleccionaOrdenador">
+    <h1>Lista de Cómics</h1>
+    <a href="/actualiza.html">Actualizar cómics</a>
+    <select name="seleccionaComic" id="seleccionaComic"></select>
 
-    </select>
     <script>
-       
-        const creaSelect = ()=>{
-            fetch('/items')
-        .then(response=>response.json())
-        .then(
-            ordenadores=>{
-                const selectOrd = document.getElementById("seleccionaOrdenador");
-                while (selectOrd.firstChild) {
-                    selectOrd.removeChild(selectOrd.firstChild);
-                }
-
-                for ( ordenador of ordenadores){
-                    let opcion = document.createElement('option');
-                    opcion.value = ordenador._id;
-                    opcion.innerHTML = ordenador.marca +'-' + ordenador.precio;
-                    document.getElementById("seleccionaOrdenador").appendChild(opcion)
-                }
-            }
-        ).catch(err=>alert(err))
-
-        }
-        
-
-
-        const traeOrdenador=()=>{
-            id = document.getElementById("seleccionaOrdenador").value;
-            fetch('/items/' + id)
-            .then( response =>response.json())
-            .then( ordenador => {
-                document.getElementById('id').value = ordenador._id;
-                document.getElementById('marca').value = ordenador.marca;
-                document.getElementById('precio').value = ordenador.precio;
-
-            })
-
-        }
-
-        const actualizaOrdenador = ()=>{
-            let marca = document.getElementById('marca').value;
-            let precio = Number(document.getElementById('precio').value);
-            let id=document.getElementById("seleccionaOrdenador").value;
-                fetch('/items/' + id,{
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type' : 'application/JSON'
-                    },
-                    body: JSON.stringify({marca, precio})
-                }).then(
-                    ordenador=>{
-                        if ( ordenador ) {
-                            creaSelect();
-                            alert("ordenador ACTUALIZADO")
-                        } else {
-                            alert("No se insertó el ordenador")
-                        }
+        // Función para crear el select con la lista de cómics
+        const creaSelect = () => {
+            fetch('/comics')
+                .then(response => response.json())
+                .then(comics => {
+                    const selectComic = document.getElementById("seleccionaComic");
+                    // Limpiar el select antes de agregar nuevas opciones
+                    while (selectComic.firstChild) {
+                        selectComic.removeChild(selectComic.firstChild);
                     }
 
-                )
-                .catch(err=>{
-                    alert(err);
+                    // Agregar cada cómic como una opción en el select
+                    for (let comic of comics) {
+                        let opcion = document.createElement('option');
+                        opcion.value = comic._id;
+                        opcion.innerHTML = `${comic.titulo} - ${comic.precio}€`;
+                        selectComic.appendChild(opcion);
+                    }
                 })
+                .catch(err => alert(err));
+        };
 
+        // Función para traer los datos de un cómic específico
+        const traeComic = () => {
+            const id = document.getElementById("seleccionaComic").value;
+            fetch('/comics/' + id)
+                .then(response => response.json())
+                .then(comic => {
+                    // Rellenar los campos del formulario con los datos del cómic
+                    document.getElementById('id').value = comic._id;
+                    document.getElementById('titulo').value = comic.titulo;
+                    document.getElementById('autor').value = comic.autor;
+                    document.getElementById('artista').value = comic.artista;
+                    document.getElementById('precio').value = comic.precio;
+                })
+                .catch(err => alert(err));
+        };
 
-        }
-        document.getElementById("seleccionaOrdenador").addEventListener('change',traeOrdenador);
-        creaSelect();
-        traeOrdenador();
+        // Función para actualizar un cómic
+        const actualizaComic = () => {
+            const id = document.getElementById("seleccionaComic").value;
+            const titulo = document.getElementById('titulo').value;
+            const autor = document.getElementById('autor').value;
+            const artista = document.getElementById('artista').value;
+            const precio = Number(document.getElementById('precio').value);
+
+            fetch('/comics/' + id, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ titulo, autor, artista, precio })
+            })
+                .then(response => response.json())
+                .then(comic => {
+                    if (comic) {
+                        creaSelect(); // Actualizar la lista de cómics
+                        alert("Cómic actualizado correctamente");
+                    } else {
+                        alert("No se pudo actualizar el cómic");
+                    }
+                })
+                .catch(err => alert(err));
+        };
+
+        // Eventos
+        document.getElementById("seleccionaComic").addEventListener('change', traeComic);
+        document.addEventListener('DOMContentLoaded', () => {
+            creaSelect(); // Cargar la lista de cómics al iniciar la página
+            traeComic();  // Cargar los datos del primer cómic
+        });
     </script>
-    <input type="text" name="id" id="id">
-    <p>Marca: <input type="text" name="marca" id="marca"></p>
-    <p>Precio: <input type="number" name="precio" id="precio"></p>
-    <button id="btn-insertar" onclick="actualizaOrdenador()">Actualiza</button>
-    
 
-    </body>
+    <!-- Formulario para editar un cómic -->
+    <input type="text" name="id" id="id">
+    <p>Título: <input type="text" name="titulo" id="titulo"></p>
+    <p>Autor: <input type="text" name="autor" id="autor"></p>
+    <p>Artista: <input type="text" name="artista" id="artista"></p>
+    <p>Precio: <input type="number" name="precio" id="precio"></p>
+    <button id="btn-actualizar" onclick="actualizaComic()">Actualizar</button>
+</body>
 </html>

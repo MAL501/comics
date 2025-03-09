@@ -3,17 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Actualizar Ordenador</title>
+    <title>Actualizar Cómic</title>
 </head>
 <body>
-    <h1>Actualizar Ordenador</h1>
+    <h1>Actualizar Cómic</h1>
     <form id="updateForm">
-        <input type="hidden" name="id" value="<%= ordenador._id %>">
-        <label for="marca">Marca:</label>
-        <input type="text" id="marca" name="marca" value="<%= ordenador.marca %>">
+        <input type="hidden" name="id" value="<%= comic._id %>">
+        <label for="titulo">Título:</label>
+        <input type="text" id="titulo" name="titulo" value="<%= comic.titulo %>">
+        <br>
+        <label for="autor">Autor:</label>
+        <input type="text" id="autor" name="autor" value="<%= comic.autor %>">
+        <br>
+        <label for="artista">Artista:</label>
+        <input type="text" id="artista" name="artista" value="<%= comic.artista %>">
         <br>
         <label for="precio">Precio:</label>
-        <input type="text" id="precio" name="precio" value="<%= ordenador.precio %>">
+        <input type="text" id="precio" name="precio" value="<%= comic.precio %>">
         <br>
         <button type="submit">Actualizar</button>
     </form>
@@ -22,26 +28,28 @@
         document.getElementById('updateForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const id = document.querySelector('input[name="id"]').value;
-            const marca = document.querySelector('input[name="marca"]').value;
+            const titulo = document.querySelector('input[name="titulo"]').value;
+            const autor = document.querySelector('input[name="autor"]').value;
+            const artista = document.querySelector('input[name="artista"]').value;
             const precio = document.querySelector('input[name="precio"]').value;
 
-            fetch(`/items/${id}`, {
+            fetch(`/comics/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ marca, precio })
+                body: JSON.stringify({ titulo, autor, artista, precio })
             })
             .then(response => {
                 if (response.ok) {
-                    window.location.href = '/';
+                    window.location.href = '/'; // Redirigir a la página principal
                 } else {
-                    alert('Error al actualizar el ordenador');
+                    alert('Error al actualizar el cómic');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error al actualizar el ordenador');
+                alert('Error al actualizar el cómic');
             });
         });
     </script>

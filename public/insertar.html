@@ -3,41 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Insertar Cómic</title>
 </head>
 <body>
-<h1>Insertar Ordenador</h1>
-<p>Marca: <input type="text" name="marca" id="marca"></p>
-<p>Precio: <input type="number" name="precio" id="precio"></p>
-<button id="btn-insertar">Insertar</button>
+    <h1>Insertar Cómic</h1>
+    <p>Título: <input type="text" name="titulo" id="titulo"></p>
+    <p>Autor: <input type="text" name="autor" id="autor"></p>
+    <p>Artista: <input type="text" name="artista" id="artista"></p>
+    <p>Precio: <input type="number" name="precio" id="precio"></p>
+    <button id="btn-insertar">Insertar</button>
 
-<script>
-    const insertOrdenador = ()=>{
-        let marca = document.getElementById('marca').value;
-        let precio = document.getElementById('precio').value;
-        fetch('/items',{
-            method: 'POST',
-            headers: {
-                'Content-Type' : 'application/JSON'
-            },
-            body: JSON.stringify({marca, precio})
-        }).then(
-            ordenador=>{
-                if ( ordenador ) {
-                    alert("ordenador insertdo")
-                } else {
-                    alert("No se insertó el ordenador")
-                }
-            }
+    <script>
+        const insertComic = () => {
+            // Obtener los valores del formulario
+            const titulo = document.getElementById('titulo').value;
+            const autor = document.getElementById('autor').value;
+            const artista = document.getElementById('artista').value;
+            const precio = document.getElementById('precio').value;
 
-        )
-        .catch(err=>{
-            alert(err);
-        })
-    }
+            // Enviar los datos al servidor
+            fetch('/comics', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ titulo, autor, artista, precio })
+            })
+                .then(response => response.json())
+                .then(comic => {
+                    if (comic) {
+                        alert("Cómic insertado correctamente");
+                        // Limpiar el formulario después de la inserción
+                        document.getElementById('titulo').value = '';
+                        document.getElementById('autor').value = '';
+                        document.getElementById('artista').value = '';
+                        document.getElementById('precio').value = '';
+                    } else {
+                        alert("No se pudo insertar el cómic");
+                    }
+                })
+                .catch(err => {
+                    alert("Error al insertar el cómic: " + err);
+                });
+        };
 
-    document.getElementById("btn-insertar").addEventListener('click',insertOrdenador)
-
-</script>
+        // Asignar la función al botón de insertar
+        document.getElementById("btn-insertar").addEventListener('click', insertComic);
+    </script>
 </body>
 </html>

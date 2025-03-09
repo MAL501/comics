@@ -3,64 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Listado de Cómics</title>
 </head>
 <body>
-    <h1>Listado de ordenadores</h1>
+    <h1>Listado de Cómics</h1>
     <a href="/registro.html">Registro nuevo usuario</a>
-    <a href="/insertar.html">Nuevo Ordenador</a>
-    <a href="/actualiza.html">Actualizar Ordenadores</a>
+    <a href="/insertar.html">Nuevo Cómic</a>
+    <a href="/actualiza.html">Actualizar Cómics</a>
     <table id="tablaProducto">
         <thead>
             <tr>
-                <th>id</th><th>marca</th><th>Precio</th>                
+                <th>ID</th>
+                <th>Título</th>
+                <th>Autor</th>
+                <th>Artista</th>
+                <th>Precio</th>
+                <th>Acciones</th>
             </tr>
         </thead>
-        <tbody id="cuerpo-tabla">
-
-        </tbody>
+        <tbody id="cuerpo-tabla"></tbody>
     </table>
+
     <script>
-        fetch('/items')
-        .then(response =>response.json())
-        .then(ordenadores=>{
-            
-            console.log(ordenadores);
-            for ( ordenador of ordenadores){
-                fila = document.createElement('tr');
-                fila.id = ordenador._id;
-                fila.innerHTML = `<td>${ordenador._id}</td>
-                <td>${ordenador.marca}</td>
-                <td>${ordenador.precio}</td>
-                <td><button onclick=eliminaOrdenador('${ordenador._id}')>Borrar ordenador</button></td>
-                <td><button onclick=actualizaOrdenador('${ordenador._id}')>Actualizar ordenador</button></td>`
-                
-                ;
-                
-                document.getElementById('cuerpo-tabla').appendChild(fila);
-            }
-           
-        })
-     function actualizaOrdenador(id) {
-            window.location.href = `/update_ordenador?id=${id}`;
-    }
-        function eliminaOrdenador(id){
-            if (confirm("¿Está seguro/a?")){
-                fetch('/items/'+id,{
-                    method:'DELETE'   
-                }).
-                then(response=>{
-                    if (  esponse.ok ) {
-                        document.getElementById(id).remove();
-                        alert("Ordenador eliminado");
+        // Función para cargar y mostrar la lista de cómics
+        fetch('/comics')
+            .then(response => response.json())
+            .then(comics => {
+                console.log(comics);
+                const cuerpoTabla = document.getElementById('cuerpo-tabla');
 
-                    }
-                    else
-                    {
-                        alert("ERROR al eliminar")
-                    }
+                for (let comic of comics) {
+                    const fila = document.createElement('tr');
+                    fila.id = comic._id;
+                    fila.innerHTML = `
+                        <td>${comic._id}</td>
+                        <td>${comic.titulo}</td>
+                        <td>${comic.autor}</td>
+                        <td>${comic.artista}</td>
+                        <td>${comic.precio}€</td>
+                        <td>
+                            <button onclick="eliminaComic('${comic._id}')">Borrar cómic</button>
+                            <button onclick="actualizaComic('${comic._id}')">Actualizar cómic</button>
+                        </td>
+                    `;
+                    cuerpoTabla.appendChild(fila);
+                }
+            })
+            .catch(err => console.error('Error al obtener los cómics:', err));
 
+        // Función para redirigir a la página de actualización
+        function actualizaComic(id) {
+            window.location.href = `/update_comic?id=${id}`;
+        }
+
+        // Función para eliminar un cómic
+        function eliminaComic(id) {
+            if (confirm("¿Está seguro/a de eliminar este cómic?")) {
+                fetch('/comics/' + id, {
+                    method: 'DELETE'
                 })
+                    .then(response => {
+                        if (response.ok) {
+                            document.getElementById(id).remove();
+                            alert("Cómic eliminado correctamente");
+                        } else {
+                            alert("Error al eliminar el cómic");
+                        }
+                    })
+                    .catch(err => console.error('Error al eliminar el cómic:', err));
             }
         }
     </script>
